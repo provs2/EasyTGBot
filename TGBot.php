@@ -181,8 +181,10 @@ class TGBot{
             echo "Security test: OK. <br />";
         }
     }
+
     public function settings($settings = ['disable_web_page_preview' => 'false', 'parse_mode' => 'HTML', 'MySQL' => true, 'PostgreSQL' => true]){
         $this->settings = $settings;
+        $this->table_name = $this->settings['table_name'];
     }
     public function botAdmin($userID = NULL){
         if($userID == NULL){

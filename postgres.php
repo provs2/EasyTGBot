@@ -2,7 +2,7 @@
 if($TGBot->settings['adminPostGreSQL']){
     try{
         //Grazie ad alsogamer per avermi aiutato con la creazione della tabella che non funzionava 
-        $TGBot->pdb->query("CREATE TABLE IF NOT EXISTS EasyTGBot(
+        $TGBot->pdb->query("CREATE TABLE IF NOT EXISTS $TGBot->table_name(
             chat_id BIGINT NOT NULL,
             first_name TEXT , 
             last_name TEXT ,
@@ -13,11 +13,11 @@ if($TGBot->settings['adminPostGreSQL']){
             to_update TEXT
             );");
     }catch(PDOException $e){}
-    $la = $TGBot->pdb->prepare("SELECT * FROM EasyTGBot WHERE chat_id = ?");
+    $la = $TGBot->pdb->prepare("SELECT * FROM $TGBot->table_name WHERE chat_id = ?");
     $la->execute([$TGBot->chat_id]);
     $la = $la->fetch(\PDO::FETCH_ASSOC);
     if($TGBot->chat_id != $la['chat_id']){
-        $insertprep = $TGBot->pdb->prepare("INSERT INTO EasyTGBot (chat_id, first_name, last_name, username, action, title, type, to_update) VALUES (?,?,?,?,?,?,?,?)");
+        $insertprep = $TGBot->pdb->prepare("INSERT INTO  (chat_id, first_name, last_name, username, action, title, type, to_update) VALUES (?,?,?,?,?,?,?,?)");
         if($TGBot->type == 'supergroup' or $TGBot->type == 'group' or $TGBot->type == 'channel'){
             $insertprep->execute([$TGBot->chat_id, NULL, NULL, NULL, 'none', $TGBot->title, $TGBot->type, true]);
         }else{
@@ -26,10 +26,10 @@ if($TGBot->settings['adminPostGreSQL']){
     }else{
         if($la['to_update']){
             if(in_array($TGBot->type, ['supergroup','group','channel'])){
-                $update = $TGBot->pdb->prepare("UPDATE EasyTGBot SET title=?, type=?, to_update=? WHERE chat_id=?"); 
+                $update = $TGBot->pdb->prepare("UPDATE $TGBot->table_name SET title=?, type=?, to_update=? WHERE chat_id=?"); 
                 $update->execute([$TGBot->title, $TGBot->type, true, $TGBot->chat_id]);
             }else{
-                $update = $TGBot->pdb->prepare("UPDATE EasyTGBot SET first_name=?, last_name=?, username=?, type=?, to_update=? WHERE chat_id=?"); 
+                $update = $TGBot->pdb->prepare("UPDATE $TGBot->table_name SET first_name=?, last_name=?, username=?, type=?, to_update=? WHERE chat_id=?"); 
                 $update->execute([$TGBot->first_name, $TGBot->last_name, $TGBot->username, $TGBot->type, true, $TGBot->chat_id]);
             }
         }
@@ -64,13 +64,13 @@ if($TGBot->cbdata_text == '/unumber'and $TGBot->botAdmin()){
             'callback_data' => '/admin'
         )
     );
-    $private = $TGBot->pdb->prepare("SELECT * FROM EasyTGBot WHERE type=?");
+    $private = $TGBot->pdb->prepare("SELECT * FROM $TGBot->table_name WHERE type=?");
     $private->execute(['private']);
-    $groups = $TGBot->pdb->prepare("SELECT * FROM EasyTGBot WHERE type=?");
+    $groups = $TGBot->pdb->prepare("SELECT * FROM $TGBot->table_name WHERE type=?");
     $groups->execute(['group']);
-    $supergroup = $TGBot->pdb->prepare("SELECT * FROM EasyTGBot WHERE type=?");
+    $supergroup = $TGBot->pdb->prepare("SELECT * FROM $TGBot->table_name WHERE type=?");
     $supergroup->execute(['supergroup']);
-    $channel = $TGBot->pdb->prepare("SELECT * FROM EasyTGBot WHERE type=?");
+    $channel = $TGBot->pdb->prepare("SELECT * FROM $TGBot->table_name WHERE type=?");
     $channel->execute(['channel']);
     $TGBot->editMessage($TGBot->chat_id, $TGBot->message_id, "<b>Here is the list of all users</b> \n👤 Private chat: ".$private->rowCount()."\n👥 Groups: ".$groups->rowCount()."\n👥 Supergroups: ".$supergroup->rowCount()."\n🗣 Channels: ".$channel->rowCount(), $buttons);
 }
@@ -104,10 +104,10 @@ if(strpos($TGBot->cbdata_text, '/gpost')===0and $TGBot->botAdmin()){
     $t = explode(' ', $TGBot->cbdata_text);
     if($t[1] == 'cancel'){
         $TGBot->deleteMessage($TGBot->chat_id, $TGBot->message_id);
-        $update = $TGBot->pdb->prepare("UPDATE EasyTGBot SET action=?, to_update=? WHERE chat_id=?"); 
+        $update = $TGBot->pdb->prepare("UPDATE $TGBot->table_name SET action=?, to_update=? WHERE chat_id=?"); 
         $update->execute(['none', true, $TGBot->chat_id]);
     }elseif($t[1] == 'media' or $t[1] == 'sticker' or $t[1] == 'text'){
-        $update = $TGBot->pdb->prepare("UPDATE EasyTGBot SET action=?, to_update=? WHERE chat_id=?"); 
+        $update = $TGBot->pdb->prepare("UPDATE $TGBot->table_name SET action=?, to_update=? WHERE chat_id=?"); 
         $update->execute(['post.'.$t[1].'_'.$t[2], false, $TGBot->chat_id]);
         $buttons[] = array(
             array(
@@ -139,13 +139,13 @@ if(strpos($TGBot->cbdata_text, '/gpost')===0and $TGBot->botAdmin()){
     }
 }
 if($TGBot->text == '/send' and isset($TGBot->reply_to_message)and $TGBot->botAdmin()){
-    $select = $TGBot->pdb->prepare("SELECT * FROM EasyTGBot WHERE chat_id=?");
+    $select = $TGBot->pdb->prepare("SELECT * FROM $TGBot->table_name WHERE chat_id=?");
     $select->execute([$TGBot->chat_id]);
     $select = $select->fetch(PDO::FETCH_ASSOC); 
     $ex = explode("_", str_replace('post.', '', $select['action']));
     if($ex[1] == 'g'){
         $TGBot->sendMessage($TGBot->chat_id, "I'm sending the media in all groups.");
-        $fetchAll = $TGBot->pdb->prepare("SELECT * FROM EasyTGBot WHERE type=?");
+        $fetchAll = $TGBot->pdb->prepare("SELECT * FROM $TGBot->table_name WHERE type=?");
         $fetchAll->execute(['supergroup']);
         $fetchAll = $fetchAll->fetchAll(PDO::FETCH_ASSOC);
         foreach($fetchAll as $fetch){
@@ -162,7 +162,7 @@ if($TGBot->text == '/send' and isset($TGBot->reply_to_message)and $TGBot->botAdm
                 $TGBot->sendDocument($fetch['chat_id'], $TGBot->reply_document_file_id, $TGBot->reply_document_caption);
             }
         }
-        $fetchAll = $TGBot->pdb->prepare("SELECT * FROM EasyTGBot WHERE type=?");
+        $fetchAll = $TGBot->pdb->prepare("SELECT * FROM $TGBot->table_name WHERE type=?");
         $fetchAll->execute(['group']);
         $fetchAll = $fetchAll->fetchAll(PDO::FETCH_ASSOC);
         foreach($fetchAll as $fetch){
@@ -182,7 +182,7 @@ if($TGBot->text == '/send' and isset($TGBot->reply_to_message)and $TGBot->botAdm
     }
     if($ex[1] == 'u'){
         $TGBot->sendMessage($TGBot->chat_id, "I'm sending the media to all users.");
-        $fetchAll = $TGBot->pdb->prepare("SELECT * FROM EasyTGBot WHERE type=?");
+        $fetchAll = $TGBot->pdb->prepare("SELECT * FROM $TGBot->table_name WHERE type=?");
         $fetchAll->execute(['private']);
         $fetchAll = $fetchAll->fetchAll(PDO::FETCH_ASSOC);
         foreach($fetchAll as $fetch){
@@ -202,7 +202,7 @@ if($TGBot->text == '/send' and isset($TGBot->reply_to_message)and $TGBot->botAdm
     }
     if($ex[1] == 'b'){
         $TGBot->sendMessage($TGBot->chat_id, "I'm sending the media in all groups and to all users.");
-        $fetchAll = $TGBot->pdb->prepare("SELECT * FROM EasyTGBot WHERE type=?");
+        $fetchAll = $TGBot->pdb->prepare("SELECT * FROM $TGBot->table_name WHERE type=?");
         $fetchAll->execute(['supergroup']);
         $fetchAll = $fetchAll->fetchAll(PDO::FETCH_ASSOC);
         foreach($fetchAll as $fetch){
@@ -219,7 +219,7 @@ if($TGBot->text == '/send' and isset($TGBot->reply_to_message)and $TGBot->botAdm
                 $TGBot->sendDocument($fetch['chat_id'], $TGBot->reply_document_file_id, $TGBot->reply_document_caption);
             }
         }
-        $fetchAll = $TGBot->pdb->prepare("SELECT * FROM EasyTGBot WHERE type=?");
+        $fetchAll = $TGBot->pdb->prepare("SELECT * FROM $TGBot->table_name WHERE type=?");
         $fetchAll->execute(['group']);
         $fetchAll = $fetchAll->fetchAll(PDO::FETCH_ASSOC);
         foreach($fetchAll as $fetch){
@@ -236,7 +236,7 @@ if($TGBot->text == '/send' and isset($TGBot->reply_to_message)and $TGBot->botAdm
                 $TGBot->sendDocument($fetch['chat_id'], $TGBot->reply_document_file_id, $TGBot->reply_document_caption);
             }
         }
-        $fetchAll = $TGBot->pdb->prepare("SELECT * FROM EasyTGBot WHERE type=?");
+        $fetchAll = $TGBot->pdb->prepare("SELECT * FROM $TGBot->table_name WHERE type=?");
         $fetchAll->execute(['private']);
         $fetchAll = $fetchAll->fetchAll(PDO::FETCH_ASSOC);
         foreach($fetchAll as $fetch){
@@ -254,7 +254,7 @@ if($TGBot->text == '/send' and isset($TGBot->reply_to_message)and $TGBot->botAdm
             }
         }
     }
-    $update = $TGBot->pdb->prepare("UPDATE EasyTGBot SET action=?, to_update=? WHERE chat_id=?"); 
+    $update = $TGBot->pdb->prepare("UPDATE $TGBot->table_name SET action=?, to_update=? WHERE chat_id=?"); 
     $update->execute(['none', true, $TGBot->chat_id]);
     $TGBot->sendMessage($TGBot->chat_id, "Done!");
   }

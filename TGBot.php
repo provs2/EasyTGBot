@@ -79,6 +79,7 @@ class TGBot{
             if(isset($this->update['channel_post'])){
                 $this->chat_id = $this->update['channel_post']['chat']['id'];
                 $this->text = $this->update['channel_post']['text'];
+                $this->message_id = $this->update['channel_post']['message_id'];
                 $this->reply_to_message_id = $this->update['channel_post']['reply_to_message']['message_id'];
                 $this->reply_to_message_title = htmlspecialchars($this->update['channel_post']['reply_to_message']['chat']['title']);
                 $this->type = $this->update['channel_post']['chat']['type'];

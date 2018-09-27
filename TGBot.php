@@ -279,7 +279,8 @@ return $get['result']['first_name'];
             'chat_id' => $chat_id,
             'text' => $text,
             'parse_mode' => $parse_mode,
-            'message_id' => $message_id
+            'message_id' => $message_id,
+            'disable_web_page_preview' => $this->settings['disable_web_page_preview']
         ];
         if($reply_markup){
                 $reply_markup = json_encode(array('inline_keyboard' => $reply_markup));

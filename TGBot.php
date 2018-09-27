@@ -31,10 +31,10 @@ class TGBot{
                     }
                 }
                 if(isset($this->photo)){
-                    $this->document_name = $this->update['message']['document']['file_name'];
-                    $this->document_mime_type = $this->update['message']['document']['mime_type'];
-                    $this->document_file_id = $this->update['message']['document']['file_id'];
-                    $this->document_file_size = $this->update['message']['document']['file_size'];
+                    $this->photo_name = $this->update['message']['photo']['file_name'];
+                    $this->photo_mime_type = $this->update['message']['photo']['mime_type'];
+                    $this->photo_file_id = $this->update['message']['photo']['file_id'];
+                    $this->photo_file_size = $this->update['message']['photo']['file_size'];
                 }
                 if(isset($this->document)){
                     $this->document_name = $this->update['message']['document']['file_name'];

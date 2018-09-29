@@ -1,5 +1,5 @@
 # Benvenuto nell'installazione di EasyTGBot!
-_Prima di tutto, specifichiamo che per utilizzare EasyTGBot bisogna avere una conoscienza almeno minima di PHP_
+_Prima di tutto, specifichiamo che per utilizzare EasyTGBot bisogna avere una conoscenza almeno minima di PHP_
 
 ## Requisiti:
 1. Avere PHP7

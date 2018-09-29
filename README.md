@@ -17,7 +17,7 @@ _Ora procediamo all'installazione di EasyTG! La guida deve essere seguita passo 
 **_A cosa serve il webhook?_**
 _Il webhook serve a telegram per comunicarci tutti gli update che il bot deve ricevere_
 **_Per settare il webhook dobbiamo fare una richiesta alle HTTP API di telegram_**
-
+_Ovviamente le {} devono essere rimosse_
 * {TOKEN} = Token del nostro bot
 * {Dominio} = Potrebbe essere anche mattiabl.it
 * {Directory} = directory che conduce alla index.php 

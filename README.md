@@ -1,6 +1,6 @@
 # Benvenuto nell'installazione di EasyTGBot!
 _Prima di tutto, specifichiamo che per utilizzare EasyTGBot bisogna avere una conoscienza almeno minima di PHP_
-test 3
+
 ## Requisiti:
 1. Avere PHP7
 2. Avere HTTPS Attivo

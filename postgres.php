@@ -17,7 +17,7 @@ if($TGBot->settings['adminPostGreSQL']){
     $la->execute([$TGBot->chat_id]);
     $la = $la->fetch(\PDO::FETCH_ASSOC);
     if($TGBot->chat_id != $la['chat_id']){
-        $insertprep = $TGBot->pdb->prepare("INSERT INTO  (chat_id, first_name, last_name, username, action, title, type, to_update) VALUES (?,?,?,?,?,?,?,?)");
+        $insertprep = $TGBot->pdb->prepare("INSERT INTO $TGBot->table_name (chat_id, first_name, last_name, username, action, title, type, to_update) VALUES (?,?,?,?,?,?,?,?)");
         if($TGBot->type == 'supergroup' or $TGBot->type == 'group' or $TGBot->type == 'channel'){
             $insertprep->execute([$TGBot->chat_id, NULL, NULL, NULL, 'none', $TGBot->title, $TGBot->type, true]);
         }else{
